@@ -76,10 +76,9 @@ Out of the 5 data sets listed above, choose **2** that appeal to you based on th
 
 <!-------------------------- Start your work below ---------------------------->
 
-1: Write 1st choice here
+1: My first choice is wildfire dataset. I grew up in BC and am interested in this data. 
 
-2: Write 2nd choice here
-
+2: My second choice is womensmarchmadness
 
 <!----------------------------------------------------------------------------->
 
@@ -93,11 +92,30 @@ One way to narrowing down your selection is to *explore* the data sets. Use your
 #### Data Set 1
 ```{r}
 ### Explore 3 variables of data set 1 ###
+head(wildfire)
+
+#Exploring the mean start date of fire by year
+fire_start_by_year <- wildfire %>% 
+  group_by(year) %>%
+  summarise(mean_start  = mean(fire_start_date, na.rm = TRUE))
+
+head(fire_start_by_year)
+
+#Exploring levels of cateogorical variables - general cause, size class
+levels(as.factor(wildfire$true_cause))
+levels(as.factor(wildfire$size_class))
+
+
 
 ```
 
+I wanted to see what the average start time of fire season for each year. It seems to start around a similar time point from 2006-2011. 
 
-Write your findings here.
+I found there are 22 categories of general causes of the wildfires
+
+There are 5 categories for size class
+
+
 
 
 
@@ -105,10 +123,40 @@ Write your findings here.
 #### Data Set 2
 ```{r}
 ### Explore 3 variables of data set 2 ###
+head(womensmarchmadness)
+
+#Exploring number of and options for different conferences
+levels(as.factor(womensmarchmadness$conference))
+
+#Exploring total number and different schools
+levels(as.factor(womensmarchmadness$school))
+
+#Exploring the number of wins by UCLA from start year to end year of dataset
+
+UCLA_wins <- filter(womensmarchmadness, school == 'UCLA')
+ggplot(UCLA_wins, aes(year,total_wins)) + geom_line()
+range(UCLA_wins$total_wins, na.rm = TRUE) 
+
+
+#Exploring 
+levels(as.factor(womensmarchmadness$bid))
+
+
+
 
 ```
 
-Write your findings here.
+I found there are 62 conferences in the womensmarchmadness dataset
+
+I wanted to explore the number of wins by UCLA to get a sense of what the data looked like for a single school. I found that the UCLA had quite a different range of wins over the years. It would be interesting to compare total wins of different school in the same conference. 
+
+I found there are only two different bids. With this knowledge I will go look up what these bids mean in relation to the dataset.
+
+
+
+
+
+
 
 
 
@@ -127,6 +175,7 @@ It's time to choose only one data set. State the data set that you've chosen, an
 
 <!-------------------------- Start your work below ---------------------------->
 
+I chose the wildfire dataset because there was better available information online of what the variables mean and that will help me with interpretability
 
 
 <!----------------------------------------------------------------------------->
@@ -142,7 +191,8 @@ Write your research questions **as questions**, and be specific. You can change 
 
 <!-------------------------- Start your work below ---------------------------->
 
-
+Primary: Is there a relationship windspeed and fire size?
+Secondary: Is there a relationship between cause of fire and size class?
 
 
 <!----------------------------------------------------------------------------->
