@@ -132,7 +132,6 @@ levels(as.factor(womensmarchmadness$conference))
 levels(as.factor(womensmarchmadness$school))
 
 #Exploring the number of wins by UCLA from start year to end year of dataset
-
 UCLA_wins <- filter(womensmarchmadness, school == 'UCLA')
 ggplot(UCLA_wins, aes(year,total_wins)) + geom_line()
 range(UCLA_wins$total_wins, na.rm = TRUE) 
@@ -175,7 +174,7 @@ It's time to choose only one data set. State the data set that you've chosen, an
 
 <!-------------------------- Start your work below ---------------------------->
 
-I chose the wildfire dataset because there was better available information online of what the variables mean and that will help me with interpretability
+I chose the wildfire dataset because there was better available information online of what the variables mean and that will help me with interpretability.
 
 
 <!----------------------------------------------------------------------------->
@@ -191,9 +190,8 @@ Write your research questions **as questions**, and be specific. You can change 
 
 <!-------------------------- Start your work below ---------------------------->
 
-Primary: Is there a relationship windspeed and fire size?
-Secondary: Is there a relationship between cause of fire and size class?
-
+Primary: Is there a relationship wind speed and final estimate of area burned (current_size)?
+Secondary: Does this relationship differ by fire type?
 
 <!----------------------------------------------------------------------------->
 
@@ -218,7 +216,27 @@ Your task is to create a table that calculates the proportion of missing values 
 <!-------------------------- Start your work below ---------------------------->
 
 ```{r}
-### Explore missingness here ###
+### Explore missing values here ##
+
+#There are 26551 rows and 35 columns in the wildfire dataset
+head(wildfire)
+
+NA_wildfire <- wildfire %>% 
+    summarise(across(everything(),~sum(is.na(.)))) %>% 
+    pivot_longer(cols = names(wildfire), 
+                      names_to = "Variable", 
+                      values_to = "NA_count"
+                    ) %>%
+    mutate(NA_proportion = NA_count/nrow(wildfire)) %>%
+    select(Variable, NA_proportion)
+
+#My methods:
+#I used is.na() function to identify the NAs then use sum() to count the number of NAs. Using the across() and everything() functions I was able to apply this to all columns as seen in our worksheets.
+#nrow() of original tibble wildfire will give total number of rows for proportion calculation
+#I think I could have not pivoted the data longer but it was easier for me to visualize and mutate based on my current knowledge
+
+print(NA_wildfire, n= 25) # printing a longer table to see that not all NA proportions are 0
+
 
 ```
 
@@ -244,7 +262,7 @@ If missingness is not an issue, describe why.
 <!-------------------------- Start your work below ---------------------------->
 
 
-
+I am interested in wind_speed, current_size, and fire_type. All of these have a proportion of missing values smaller than 0.2 (20%) based on the generated table so this is acceptable and therefore not an issue for the analysis. The largest proportion missing of my variables of interest is wind_speed at 10.8%.
 
 <!----------------------------------------------------------------------------->
 
@@ -269,8 +287,18 @@ Show the first 6 rows of the tidied data.
 
 <!-------------------------- Start your work below ---------------------------->
 ```{r}
+#Tidying data to only contained required columns as part of the primary and secondary research questions. 
+
+#Once I isolate my columns of interest, I believe the data is tidy for my purposes - I don't want to separate by fire type category (pivot_wider) because that would create too many columns and I don't think it would be inherently useful.
 
 
+tidy_data <- select(wildfire, wind_speed, current_size, fire_type) #Units: Wind speed [km/h], fire_type [categorical], Affected_Area_Final [Hectares]
+
+tidy_data <- rename(tidy_data, Affected_Area_Final = "current_size")
+
+tidy_data <- na.omit(tidy_data) #remove any rows with NA as all the columns are needed per row to be useful in this analysis
+
+head(tidy_data) # Could have also done print(wildfire, n=6) here but head prints the first 6 rows anyways
 
 
 ```
@@ -287,6 +315,32 @@ Show the outputted table.
 <!-------------------------- Start your work below ---------------------------->
 ```{r}
 
+#Numeric columns in my data are wind_speed and Area_Affected_Final. I dropped the NA values in the previous section. However, if I wanted to do that here I can do na.rm = TRUE inside the brackets for mean(), min(), max(), and group_by(). 
+
+#For my purposes, I think it made more sense to group these by fire type since that is what my research question is regarding.
+tidydat_summary <- tidy_data %>%
+  group_by(fire_type) %>%
+  summarise(windspeed_mean = mean(wind_speed),
+            windspeed_min = min(wind_speed),
+            windspeed_max = max(wind_speed),
+            area_mean = mean(Affected_Area_Final),
+            area_min = min(Affected_Area_Final),
+            area_max = max(Affected_Area_Final)
+            )
+
+print(tidydat_summary, n=6)
+
+#However, I could also do it per column with no group separation:
+tidydat_summary_nosep <- tidy_data %>%
+  summarise(windspeed_mean = mean(wind_speed),
+            windspeed_min = min(wind_speed),
+            windspeed_max = max(wind_speed),
+            area_mean = mean(Affected_Area_Final),
+            area_min = min(Affected_Area_Final),
+            area_max = max(Affected_Area_Final)
+            )
+
+print(tidydat_summary_nosep, n=6)
 
 
 
