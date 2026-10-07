@@ -364,7 +364,6 @@ levels(as.factor(womensmarchmadness$school))
 
 ``` r
 #Exploring the number of wins by UCLA from start year to end year of dataset
-
 UCLA_wins <- filter(womensmarchmadness, school == 'UCLA')
 ggplot(UCLA_wins, aes(year,total_wins)) + geom_line()
 ```
@@ -405,7 +404,7 @@ chosen, and why you’ve chosen it.
 
 I chose the wildfire dataset because there was better available
 information online of what the variables mean and that will help me with
-interpretability
+interpretability.
 
 <!----------------------------------------------------------------------------->
 
@@ -423,8 +422,9 @@ change it later if needed.
 
 <!-------------------------- Start your work below ---------------------------->
 
-Primary: Is there a relationship windspeed and fire size? Secondary: Is
-there a relationship between cause of fire and size class?
+Primary: Is there a relationship wind speed and final estimate of area
+burned (current_size)? Secondary: Does this relationship differ by fire
+type?
 
 <!----------------------------------------------------------------------------->
 
@@ -446,8 +446,76 @@ values per variable. Be sure to output the table.
 <!-------------------------- Start your work below ---------------------------->
 
 ``` r
-### Explore missingness here ###
+### Explore missing values here ##
+
+#There are 26551 rows and 35 columns in the wildfire dataset
+head(wildfire)
 ```
+
+    ## # A tibble: 6 × 35
+    ##    year fire_number current_size size_class latitude longitude fire_origin    
+    ##   <dbl> <chr>              <dbl> <chr>         <dbl>     <dbl> <chr>          
+    ## 1  2006 PWF001              0.1  A              56.2     -117. Land Owner     
+    ## 2  2006 EWF002              0.2  B              53.6     -116. Fire Department
+    ## 3  2006 EWF001              0.5  B              53.6     -116. Fire Department
+    ## 4  2006 EWF003              0.01 A              53.6     -116. Industry       
+    ## 5  2006 PWF002              0.1  A              56.2     -117. Fire Department
+    ## 6  2006 CWF001              0.2  B              51.2     -115. Fire Department
+    ## # ℹ 28 more variables: general_cause <chr>, responsible_group <chr>,
+    ## #   activity_class <chr>, true_cause <chr>, fire_start_date <dttm>,
+    ## #   detection_agent_type <chr>, detection_agent <chr>,
+    ## #   assessment_hectares <dbl>, fire_spread_rate <dbl>, fire_type <chr>,
+    ## #   fire_position_on_slope <chr>, weather_conditions_over_fire <chr>,
+    ## #   temperature <dbl>, relative_humidity <dbl>, wind_direction <chr>,
+    ## #   wind_speed <dbl>, fuel_type <chr>, initial_action_by <chr>, …
+
+``` r
+NA_wildfire <- wildfire %>% 
+    summarise(across(everything(),~sum(is.na(.)))) %>% 
+    pivot_longer(cols = names(wildfire), 
+                      names_to = "Variable", 
+                      values_to = "NA_count"
+                    ) %>%
+    mutate(NA_proportion = NA_count/nrow(wildfire)) %>%
+    select(Variable, NA_proportion)
+
+#My methods:
+#I used is.na() function to identify the NAs then use sum() to count the number of NAs. Using the across() and everything() functions I was able to apply this to all columns as seen in our worksheets.
+#nrow() of original tibble wildfire will give total number of rows for proportion calculation
+#I think I could have not pivoted the data longer but it was easier for me to visualize and mutate based on my current knowledge
+
+print(NA_wildfire, n= 25) # printing a longer table to see that not all NA proportions are 0
+```
+
+    ## # A tibble: 35 × 2
+    ##    Variable                     NA_proportion
+    ##    <chr>                                <dbl>
+    ##  1 year                             0        
+    ##  2 fire_number                      0        
+    ##  3 current_size                     0        
+    ##  4 size_class                       0        
+    ##  5 latitude                         0        
+    ##  6 longitude                        0        
+    ##  7 fire_origin                      0        
+    ##  8 general_cause                    0        
+    ##  9 responsible_group                0        
+    ## 10 activity_class                   0        
+    ## 11 true_cause                       0        
+    ## 12 fire_start_date                  0.0261   
+    ## 13 detection_agent_type             0        
+    ## 14 detection_agent                  0        
+    ## 15 assessment_hectares              0        
+    ## 16 fire_spread_rate                 0        
+    ## 17 fire_type                        0.0000377
+    ## 18 fire_position_on_slope           0        
+    ## 19 weather_conditions_over_fire     0        
+    ## 20 temperature                      0.108    
+    ## 21 relative_humidity                0.108    
+    ## 22 wind_direction                   0        
+    ## 23 wind_speed                       0.108    
+    ## 24 fuel_type                        0        
+    ## 25 initial_action_by                0        
+    ## # ℹ 10 more rows
 
 <!----------------------------------------------------------------------------->
 
@@ -476,6 +544,12 @@ If missingness is not an issue, describe why.
 
 <!-------------------------- Start your work below ---------------------------->
 
+I am interested in wind_speed, current_size, and fire_type. All of these
+have a proportion of missing values smaller than 0.2 (20%) based on the
+generated table so this is acceptable and therefore not an issue for the
+analysis. The largest proportion missing of my variables of interest is
+wind_speed at 10.8%.
+
 <!----------------------------------------------------------------------------->
 
 ### 2.3: Tidy your Data **(10 points)**
@@ -499,6 +573,31 @@ Show the first 6 rows of the tidied data.
 
 <!-------------------------- Start your work below ---------------------------->
 
+``` r
+#Tidying data to only contained required columns as part of the primary and secondary research questions. 
+
+#Once I isolate my columns of interest, I believe the data is tidy for my purposes - I don't want to separate by fire type category (pivot_wider) because that would create too many columns and I don't think it would be inherently useful.
+
+
+tidy_data <- select(wildfire, wind_speed, current_size, fire_type) #Units: Wind speed [km/h], fire_type [categorical], Affected_Area_Final [Hectares]
+
+tidy_data <- rename(tidy_data, Affected_Area_Final = "current_size")
+
+tidy_data <- na.omit(tidy_data) #remove any rows with NA as all the columns are needed per row to be useful in this analysis
+
+head(tidy_data) # Could have also done print(wildfire, n=6) here but head prints the first 6 rows anyways
+```
+
+    ## # A tibble: 6 × 3
+    ##   wind_speed Affected_Area_Final fire_type
+    ##        <dbl>               <dbl> <chr>    
+    ## 1          2                0.1  Surface  
+    ## 2         10                0.2  Surface  
+    ## 3         10                0.5  Surface  
+    ## 4         10                0.01 Surface  
+    ## 5          2                0.1  Surface  
+    ## 6         20                0.2  Surface
+
 <!----------------------------------------------------------------------------->
 
 ### 2.4: Create a Table (10 points)
@@ -510,6 +609,51 @@ dropping the missing values if they exist.
 Show the outputted table.
 
 <!-------------------------- Start your work below ---------------------------->
+
+``` r
+#Numeric columns in my data are wind_speed and Area_Affected_Final. I dropped the NA values in the previous section. However, if I wanted to do that here I can do na.rm = TRUE inside the brackets for mean(), min(), max(), and group_by(). 
+
+#For my purposes, I think it made more sense to group these by fire type since that is what my research question is regarding.
+tidydat_summary <- tidy_data %>%
+  group_by(fire_type) %>%
+  summarise(windspeed_mean = mean(wind_speed),
+            windspeed_min = min(wind_speed),
+            windspeed_max = max(wind_speed),
+            area_mean = mean(Affected_Area_Final),
+            area_min = min(Affected_Area_Final),
+            area_max = max(Affected_Area_Final)
+            )
+
+print(tidydat_summary, n=6)
+```
+
+    ## # A tibble: 4 × 7
+    ##   fire_type windspeed_mean windspeed_min windspeed_max area_mean area_min
+    ##   <chr>              <dbl>         <dbl>         <dbl>     <dbl>    <dbl>
+    ## 1 Crown              11.1              0            75   2671.       0.01
+    ## 2 Ground              8.46             0            89    162.       0.01
+    ## 3 Surface             8.84             0            90    165.       0.01
+    ## 4 Unknown            10.3              1            18      0.01     0.01
+    ## # ℹ 1 more variable: area_max <dbl>
+
+``` r
+#However, I could also do it per column with no group separation:
+tidydat_summary_nosep <- tidy_data %>%
+  summarise(windspeed_mean = mean(wind_speed),
+            windspeed_min = min(wind_speed),
+            windspeed_max = max(wind_speed),
+            area_mean = mean(Affected_Area_Final),
+            area_min = min(Affected_Area_Final),
+            area_max = max(Affected_Area_Final)
+            )
+
+print(tidydat_summary_nosep, n=6)
+```
+
+    ## # A tibble: 1 × 6
+    ##   windspeed_mean windspeed_min windspeed_max area_mean area_min area_max
+    ##            <dbl>         <dbl>         <dbl>     <dbl>    <dbl>    <dbl>
+    ## 1           8.86             0            90      280.     0.01  577647.
 
 <!----------------------------------------------------------------------------->
 
