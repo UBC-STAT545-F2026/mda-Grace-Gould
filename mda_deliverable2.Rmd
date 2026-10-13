@@ -34,10 +34,9 @@ First, write out the two research questions you defined in Milestone 1. If you'd
 
 <!-------------------------- Start your work below ---------------------------->
 
-Q1 (Primary):  *FILL_THIS_IN*
+Q1 (Primary):  Is there a relationship wind speed and final estimate of area burned (current_size)?
 
-Q2 (Secondary):  *FILL_THIS_IN*
-
+Q2 (Secondary):  Does this relationship differ by fire type?
 
 <!----------------------------------------------------------------------------->
 
@@ -56,7 +55,11 @@ Show the outputted table.
 <!-------------------------- Start your work below ---------------------------->
 ```{r}
 
+tidydat_summary <- tidy_data %>%
+  group_by(fire_type) %>%
+  summarise(windspeed_mean = mean(wind_speed))
 
+print(tidydat_summary, n=6)
 
 
 ```
@@ -76,6 +79,16 @@ Clearly label the variable that is being plotted in each plot. Make sure the out
 <!-------------------------- Start your work below ---------------------------->
 ```{r}
 
+tidy_data %>%
+ggplot(aes(x = wind_speed)) + geom_histogram() +
+labs(title = "Wind Speed vs Final Affected Area of Wildfire", x = "Wind Speed (km/h)", y = "Observation Count")
+
+
+tidy_data %>%
+  ggplot(aes(x = as.factor(fire_type))) + geom_bar(aes(y = after_stat(prop),group = 1)) + 
+  labs(title = "Final Affected Area of Wildfire by Fire Type", x = "Fire Type", y = "Proportion", color = "Fire Type" )
+
+#using after_stat(prop) and group = 1 tells R that we want to calculate the proportion of each categorical by using the length of the whole dataset.
 
 
 
@@ -117,28 +130,48 @@ All of your plots should follow the guidelines presented in class with clear axi
 
 **Primary Question:**
 
-Task:
+Task: G1
 
 
 ```{r}
 # Plot 1
 
+tidy_data %>%
+  ggplot(aes( x = log(wind_speed), y = Affected_Area_Final)) + geom_point() + 
+  labs(title = "Wind Speed vs Final Affected Area", x = "log(Wind Speed) [log(km/h)]", y = "Final Affected Area (hectares)")
+
+
+
+
 ```
 
 
-Discussion:
+Discussion: I have previously plotted wind speed vs Final Affected Area and noticed that a large portion of the wind speed observations were below 25km/h so I wanted to explore what transforming the wind speed axis into a log scale would do. Plotting log(Wind Speed) definitely helped spread the data more evenly when plotted against Final Affected Area. However, it is still difficult to see a relationship. In the future, something that I could explore is what the distribution would look like after excluding outliers
 
 **Secondary Question:**
 
-Task:
+Task: G5
 
 
 ```{r}
 # Plot 2
+# Colour-blind package found on github documentatation. Links here: 
+#https://sjmgarnier.github.io/viridis/ 
+#https://r-graph-gallery.com/package/viridis.html
+
+colors = viridis(4) #Getting 4 color-blind friendly colours from the Viridis package
+
+tidy_data %>%
+  filter(Affected_Area_Final < 300000) %>% # I decided to ingore the data points with a Final Affected Area over 3e^05 hectares as it was plotting majority of the data close to the. 
+  ggplot(aes( x = wind_speed, y = Affected_Area_Final )) + geom_point(aes(color = fire_type), size = 2) + facet_wrap(~fire_type)+ 
+  labs(title = "Wind Speed vs Final Affected Area", x = "Wind Speed km/h", y = "Final Affected Area (hectares)") +
+  scale_color_manual(values = colors)
+
+
+
 ```
 
-Discussion:
-
+Discussion: It was difficult to see if there was any type of relationship as many of the dots were overlapping. So in addition to assigning each fire type a colour-blind friendly colour, I alson did facetting because I wanted to look at the individual distributions for categorical variable "fire type"  It made sense to do task G5 to split this up. After facetting, the individual distributions are a little easier to see. From these distributions, it looks like most of the fires are concentrated under 50 km/h wind speed. From these distributions, it looks like many fires, big or small, happen at wind speeds lower than 50 km/h. 
 
 <!----------------------------------------------------------------------------->
 
