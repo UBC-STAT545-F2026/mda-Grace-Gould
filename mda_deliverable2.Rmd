@@ -146,7 +146,7 @@ tidy_data %>%
 ```
 
 
-Discussion: I have previously plotted wind speed vs Final Affected Area and noticed that a large portion of the wind speed observations were below 25km/h so I wanted to explore what transforming the wind speed axis into a log scale would do. Plotting log(Wind Speed) definitely helped spread the data more evenly when plotted against Final Affected Area. However, it is still difficult to see a relationship. In the future, something that I could explore is what the distribution would look like after excluding outliers
+Discussion: I have previously plotted wind speed vs Final Affected Area and noticed that a large portion of the wind speed observations were below 25km/h so I wanted to explore what transforming the wind speed axis into a log scale would do. Plotting log(Wind Speed) definitely helped spread the data more evenly when plotted against Final Affected Area. However, it is still difficult to see a relationship and therefore I cannot make any type of conclusions about the relationship proposed in hypothesis 1. In the future, something that I could explore is what the distribution would look like after excluding outliers.
 
 **Secondary Question:**
 
@@ -171,7 +171,7 @@ tidy_data %>%
 
 ```
 
-Discussion: It was difficult to see if there was any type of relationship as many of the dots were overlapping. So in addition to assigning each fire type a colour-blind friendly colour, I alson did facetting because I wanted to look at the individual distributions for categorical variable "fire type"  It made sense to do task G5 to split this up. After facetting, the individual distributions are a little easier to see. From these distributions, it looks like most of the fires are concentrated under 50 km/h wind speed. From these distributions, it looks like many fires, big or small, happen at wind speeds lower than 50 km/h. 
+Discussion: It was difficult to see if there was any type of relationship as many of the dots were overlapping. So in addition to assigning each fire type a colour-blind friendly colour, I alson did facetting because I wanted to look at the individual distributions for categorical variable "fire type"  It made sense to do task G5 to split this up. After facetting, the individual distributions are a little easier to see. Considering these graphs with respect to the second hypothesis: Disregarding the "unknown" category, it looks like many fires, big or small, happen at wind speeds lower than 50 km/h - regardless of the fire type.
 
 <!----------------------------------------------------------------------------->
 
