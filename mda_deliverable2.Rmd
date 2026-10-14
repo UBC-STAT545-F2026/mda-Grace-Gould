@@ -20,8 +20,8 @@ library(tidyverse)
 library(diversedata)
 
 #--- Add any other packages below this line ---#
-
-
+library(broom) #for model-fitting 
+library(viridis)#for colour-blind dataset
 ```
 
 
@@ -189,6 +189,13 @@ Fit a model or run a hypothesis test that provides insight on this variable with
 
 <!-------------------------- Start your work below ---------------------------->
 
+```{r}
+
+tidy_lm <- lm(Affected_Area_Final ~ wind_speed ,tidy_data)
+
+```
+
+
 <!----------------------------------------------------------------------------->
 
 ### 3.3: Investigate Your Model (3 points)
@@ -200,6 +207,15 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 -   Obtain your results using the `broom` package if possible. If your model is not compatible with the broom function you're needing, then you can obtain your results by some other means, but first indicate which broom function is not compatible.
 
 <!-------------------------- Start your work below ---------------------------->
+
+```{r}
+# I used the tidy() function from the broom library to be able to look at the p.value column. 
+
+tidy(tidy_lm)
+```
+
+
+
 
 <!----------------------------------------------------------------------------->
 
@@ -216,6 +232,7 @@ Take a summary table that you made from Task 2.1, and write it as a csv file in 
 
 <!-------------------------- Start your work below ---------------------------->
 
+
 <!----------------------------------------------------------------------------->
 
 ### 4.2 Input Using `here()` (3 points)
@@ -225,6 +242,8 @@ Write your model object from Task 3.2 to an R binary file (an RDS), and load it 
 -   The same robustness and reproducibility criteria as in 4.1 apply here.
 
 <!-------------------------- Start your work below ---------------------------->
+
+
 
 <!----------------------------------------------------------------------------->
 
