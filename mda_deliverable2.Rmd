@@ -16,12 +16,13 @@ Begin by loading your data and the tidyverse package below:
 Typically, R Packages are loaded in at the very beginning of the analysis. If you later want to use other packages, please come back and add them here:
 
 ```{r, warning = F, message = F}
-library(tidyverse)
-library(diversedata)
+#library(tidyverse)
+#library(diversedata)
 
 #--- Add any other packages below this line ---#
-library(broom) #for model-fitting 
-library(viridis)#for colour-blind dataset
+#library(broom) #for model-fitting 
+#library(viridis)#for colour-blind dataset
+#library(here) #For task 4
 ```
 
 
@@ -232,6 +233,12 @@ Take a summary table that you made from Task 2.1, and write it as a csv file in 
 
 <!-------------------------- Start your work below ---------------------------->
 
+```{r}
+
+write.csv(tidydat_summary, here("output", "tidydat_summary.csv"))
+
+```
+
 
 <!----------------------------------------------------------------------------->
 
@@ -243,6 +250,13 @@ Write your model object from Task 3.2 to an R binary file (an RDS), and load it 
 
 <!-------------------------- Start your work below ---------------------------->
 
+```{r}
+
+
+read.csv(here("output", "tidydat_summary.csv"))
+
+
+```
 
 
 <!----------------------------------------------------------------------------->
