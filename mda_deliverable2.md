@@ -1,0 +1,438 @@
+Mini Data-Analysis: Deliverable 2
+================
+
+Total points available: 61
+
+# Task 0: Setup
+
+Begin by loading your data and the tidyverse package below:
+
+**0.1: Load Packages**
+
+Typically, R Packages are loaded in at the very beginning of the
+analysis. If you later want to use other packages, please come back and
+add them here:
+
+``` r
+library(tidyverse)
+library(diversedata)
+
+#--- Add any other packages below this line ---#
+library(broom) #for model-fitting 
+library(viridis)#for colour-blind dataset
+library(here) #For task 4
+```
+
+# Task 1: Your Research Questions
+
+### 1.1: Write Research Questions (1 point)
+
+First, write out the two research questions you defined in Milestone 1.
+If you’d like to refine them, you can do so here and just write the new
+question. This will guide your work through Milestone 2:
+
+<!-------------------------- Start your work below ---------------------------->
+
+Q1 (Primary): Is there a relationship wind speed and final estimate of
+area burned (current_size)?
+
+Q2 (Secondary): Does this relationship differ by fire type?
+
+<!----------------------------------------------------------------------------->
+
+# Task 2: Summarizing Your Data
+
+### 2.1: Summarize Over Levels of a Categorical Variable **(8 points)**
+
+Use your `tidyverse` knowledge to create one table that calculates mean
+of one numeric variable for each of the levels of another categorical
+variable (for example, the mean age of each class in the titanic data).
+
+Show the outputted table.
+
+<!-------------------------- Start your work below ---------------------------->
+
+``` r
+#Copying over code to get tidy_data from mda - need to do this on MDA deliverable 2 file to avoid knitting errors. 
+tidy_data <- select(wildfire, wind_speed, current_size, fire_type) #Units: Wind speed [km/h], fire_type [categorical], Affected_Area_Final [Hectares]
+tidy_data <- rename(tidy_data, Affected_Area_Final = "current_size")
+tidy_data <- na.omit(tidy_data)
+
+
+
+tidydat_summary <- tidy_data %>%
+  group_by(fire_type) %>%
+  summarise(windspeed_mean = mean(wind_speed))
+
+print(tidydat_summary, n=6)
+```
+
+    ## # A tibble: 4 × 2
+    ##   fire_type windspeed_mean
+    ##   <chr>              <dbl>
+    ## 1 Crown              11.1 
+    ## 2 Ground              8.46
+    ## 3 Surface             8.84
+    ## 4 Unknown            10.3
+
+<!----------------------------------------------------------------------------->
+
+### 2.2: Plot Distributions (8 points)
+
+- **2.2.1** Use `ggplot` to plot the distribution of one of the numeric
+  variables in your tidied data set.
+
+- **2.2.2** Use `ggplot` to create a visualization showing the relative
+  proportions of each category/level for one of categorical variable in
+  your tidied data set.
+
+Clearly label the variable that is being plotted in each plot. Make sure
+the output is as clear as possible, provide an English title along with
+readable x and y column names
+
+<!-------------------------- Start your work below ---------------------------->
+
+``` r
+tidy_data %>%
+ggplot(aes(x = wind_speed)) + geom_histogram() +
+labs(title = "Wind Speed vs Final Affected Area of Wildfire", x = "Wind Speed (km/h)", y = "Observation Count")
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](mda_deliverable2_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+``` r
+tidy_data %>%
+  ggplot(aes(x = as.factor(fire_type))) + geom_bar(aes(y = after_stat(prop),group = 1)) + 
+  labs(title = "Final Affected Area of Wildfire by Fire Type", x = "Fire Type", y = "Proportion", color = "Fire Type" )
+```
+
+![](mda_deliverable2_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+
+``` r
+#using after_stat(prop) and group = 1 tells R that we want to calculate the proportion of each categorical by using the length of the whole dataset.
+```
+
+<!----------------------------------------------------------------------------->
+
+# Task 3: Exploring Relationships
+
+### 3.1: Visualize Relationships **(12 points)**
+
+Now, for *each* of your research questions, choose one Graphing Task.
+Discuss the results (does this help answer your research question, or
+point toward more things to further explore?).
+
+Ensure that the output of each operation is printed!
+
+Also make sure that you’re using `dplyr` and `ggplot2` rather than base
+R. Outside of this project, you may find that you prefer using base R
+functions for certain tasks, and that’s just fine! But part of this
+project is for you to practice the tools we learned in class, which is
+dplyr and ggplot2.
+
+**Graphing Tasks:**
+
+- G1. Create a graph of your choosing, make one of the axes logarithmic,
+  and format the axes labels so that they are easier to read but still
+  say what is being measured (log-scaled).
+
+- G2. Make a graph where it makes sense to customize the alpha
+  transparency.
+
+- G3. Create a graph that has at least two geom\_\* layers.
+
+- G4. Create 3 histograms, with each histogram having different sized
+  bins. Pick the “best” one and explain why it is the best.
+
+- G5: Create a graph where you map the colour of a line/point/plot to
+  the level of categorical variable, using a colourblind-friendly
+  palette
+
+- G6: Create a plot that involves facets (sub-panels)
+
+All of your plots should follow the guidelines presented in class with
+clear axis labels, titles, etc.
+
+<!------------------------- Start your work below ----------------------------->
+
+**Primary Question:**
+
+Task: G1
+
+``` r
+# Plot 1
+
+tidy_data %>%
+  ggplot(aes( x = log(wind_speed), y = Affected_Area_Final)) + geom_point() + 
+  labs(title = "Wind Speed vs Final Affected Area", x = "log(Wind Speed) [log(km/h)]", y = "Final Affected Area (hectares)")
+```
+
+![](mda_deliverable2_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+Discussion: I have previously plotted wind speed vs Final Affected Area
+and noticed that a large portion of the wind speed observations were
+below 25km/h so I wanted to explore what transforming the wind speed
+axis into a log scale would do. Plotting log(Wind Speed) definitely
+helped spread the data more evenly when plotted against Final Affected
+Area. However, it is still difficult to see a relationship and therefore
+I cannot make any type of conclusions about the relationship proposed in
+hypothesis 1. In the future, something that I could explore is what the
+distribution would look like after excluding outliers.
+
+**Secondary Question:**
+
+Task: G5
+
+``` r
+# Plot 2
+# Colour-blind package found on github documentatation. Links here: 
+#https://sjmgarnier.github.io/viridis/ 
+#https://r-graph-gallery.com/package/viridis.html
+
+colors = viridis(4) #Getting 4 color-blind friendly colours from the Viridis package
+
+tidy_data %>%
+  filter(Affected_Area_Final < 300000) %>% # I decided to ingore the data points with a Final Affected Area over 3e^05 hectares as it was plotting majority of the data close to the. 
+  ggplot(aes( x = wind_speed, y = Affected_Area_Final )) + geom_point(aes(color = fire_type), size = 2) + facet_wrap(~fire_type)+ 
+  labs(title = "Wind Speed vs Final Affected Area", x = "Wind Speed km/h", y = "Final Affected Area (hectares)") +
+  scale_color_manual(values = colors)
+```
+
+![](mda_deliverable2_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+Discussion: It was difficult to see if there was any type of
+relationship as many of the dots were overlapping. So in addition to
+assigning each fire type a colour-blind friendly colour, I alson did
+facetting because I wanted to look at the individual distributions for
+categorical variable “fire type” It made sense to do task G5 to split
+this up. After facetting, the individual distributions are a little
+easier to see. Considering these graphs with respect to the second
+hypothesis: Disregarding the “unknown” category, it looks like many
+fires, big or small, happen at wind speeds lower than 50 km/h -
+regardless of the fire type.
+
+<!----------------------------------------------------------------------------->
+
+### 3.2: Fit a Model **(3 points)**
+
+Fit a model or run a hypothesis test that provides insight on this
+variable with respect to the research question. Store the model object
+as a variable, and print its output to screen. We’ll omit having to
+justify your choice, because we don’t expect you to know about model
+specifics in STAT 545.
+
+- **Note**: It’s OK if you don’t know how these models/tests work. Here
+  are some examples of things you can do here, but the sky’s the limit.
+
+  - You could fit a model that makes predictions on Y using another
+    variable, by using the `lm()` function.
+  - You could test whether the mean of Y equals 0 using `t.test()`, or
+    maybe the mean across two groups are different using `t.test()`, or
+    maybe the mean across multiple groups are different using `anova()`
+    (you may have to pivot your data for the latter two).
+  - You could use `lm()` to test for significance of regression
+    coefficients.
+
+<!-------------------------- Start your work below ---------------------------->
+
+``` r
+tidy_lm <- lm(Affected_Area_Final ~ wind_speed ,tidy_data)
+```
+
+<!----------------------------------------------------------------------------->
+
+### 3.3: Investigate Your Model (3 points)
+
+Produce something relevant from your fitted model: either predictions on
+Y, or a single value like a regression coefficient or a p-value.
+
+- Be sure to indicate in writing what you chose to produce.
+- Your code should either output a tibble (in which case you should
+  indicate the column that contains the thing you’re looking for), or
+  the thing you’re looking for itself.
+- Obtain your results using the `broom` package if possible. If your
+  model is not compatible with the broom function you’re needing, then
+  you can obtain your results by some other means, but first indicate
+  which broom function is not compatible.
+
+<!-------------------------- Start your work below ---------------------------->
+
+``` r
+# I used the tidy() function from the broom library to be able to look at the p.value column. 
+
+tidy(tidy_lm)
+```
+
+    ## # A tibble: 2 × 5
+    ##   term        estimate std.error statistic  p.value
+    ##   <chr>          <dbl>     <dbl>     <dbl>    <dbl>
+    ## 1 (Intercept)    -81.8     63.9      -1.28 2.01e- 1
+    ## 2 wind_speed      40.8      5.23      7.80 6.64e-15
+
+<!----------------------------------------------------------------------------->
+
+# Task 4: Reading and writing data
+
+Get set up for this exercise by making a folder called `output` in the
+top level of your project folder / repository. You’ll be saving things
+there.
+
+### 4.1 Output Using `here()` (3 points)
+
+Take a summary table that you made from Task 2.1, and write it as a csv
+file in your `output` folder. Use the `here::here()` function.
+
+- **Robustness criteria**: You should be able to move your Mini Project
+  repository / project folder to some other location on your computer,
+  or move this very Rmd file to another location within your project
+  repository / folder, and your code should still work.
+- **Reproducibility criteria**: You should be able to delete the csv
+  file, and remake it simply by knitting this Rmd file.
+
+<!-------------------------- Start your work below ---------------------------->
+
+``` r
+write.csv(tidydat_summary, here("output", "tidydat_summary.csv"))
+```
+
+<!----------------------------------------------------------------------------->
+
+### 4.2 Input Using `here()` (3 points)
+
+Write your model object from Task 3.2 to an R binary file (an RDS), and
+load it again. Be sure to save the binary file in your `output` folder.
+Use the functions `saveRDS()` and `readRDS()`.
+
+- The same robustness and reproducibility criteria as in 4.1 apply here.
+
+<!-------------------------- Start your work below ---------------------------->
+
+``` r
+read.csv(here("output", "tidydat_summary.csv"))
+```
+
+    ##   X fire_type windspeed_mean
+    ## 1 1     Crown      11.124424
+    ## 2 2    Ground       8.461158
+    ## 3 3   Surface       8.839305
+    ## 4 4   Unknown      10.333333
+
+<!----------------------------------------------------------------------------->
+
+# Task 5: Tidy Your Submission Overall
+
+Check over your document and GitHub repository for the following:
+
+### 5.1: Coherence **(2 points)**
+
+The document should read sensibly from top to bottom, with no major
+continuity errors. An example of a major continuity error is having a
+data set listed for Task 3 that is not part of one of the data sets
+listed in Task 1.
+
+### 5.2: Error-free code **(2 points)**
+
+For full marks, all code in the document should run without error and be
+completely reproducible.
+
+### 5.3 README **(6 points)**
+
+There should be a file named `README.md` at the top level of your
+repository. Its contents should automatically appear when you visit the
+repository on GitHub.
+
+Minimum contents of the README file:
+
+- In a sentence or two, explains what this repository is, so that
+  future-you or someone else stumbling on your repository can be
+  oriented to the repository.
+- List the files/folders contained in the repository
+- In a sentence or two, briefly explains how to engage with the
+  repository. You can assume the person reading knows the material from
+  STAT 545A. Basically, if a visitor to your repository wants to explore
+  your project, what should they know? How can they reproduce your
+  report?
+
+### 5.4 Generative AI Disclosure **(3 points)**
+
+In this course, Generative AI can be used in the following ways:
+
+- to clarify concepts discussed in class
+
+- as an “advanced search engine” (i.e., searching error codes)
+
+- debugging code that students wrote and attempted to debug on their own
+
+Generative AI **CANNOT** be used to generate text or code (including
+comments) from scratch.
+
+Any use of Generative AI must be disclosed.
+
+**To disclose your use, please copy and paste the following template
+into the README of your GitHub Repository and fill out the relevant
+details** \[in square brackets\]. BE SPECIFIC. Saying you used it to
+debug your code is not enough. Explicitly describe where you got stuck
+
+Here is an example of a specific, explicit debug:
+
+> “I had the error `attempt to apply non-function` after running my
+> code. I used Claude to help me identify that this error was due to me
+> attempting to multiply two numbers together without the use of a `*`,
+> i.e. `(2)(3)` instead of `2*3`.”
+
+``` markdown
+
+## Generative AI Statement 
+
+Generative AI (through [LIST MODELS USED, i.e. ChatGPT, CoPilot)] was used to 
+help me complete  this assignment in the following ways. 
+
+1. [Describe here]
+
+2. [Describe here]
+
+...
+
+I affirm that Generative AI was not used to generate text, code, or comments for 
+my assessments. 
+```
+
+If you did not use Generative AI, please include the following in your
+README:
+
+``` markdown
+
+## Generative AI Statement 
+
+Generative AI was not used in any way throughout this assignment.
+```
+
+Assessments suspected of having AI-generated text and/or code, or
+assignments where the Generative AI use was not disclosed, will be
+flagged and temporarily assigned a grade of zero. Students will be
+required to meet with the instructor to receive a grade.
+
+### 5.5 Output **(4 points)**
+
+All output on GitHub is readable, recent and relevant:
+
+- All `.Rmd` files have been `knit`ted to their output `.md` files.
+- All knitted `.md` files are viewable without errors on Github.
+  Examples of errors: Missing plots, “Sorry about that, but we can’t
+  show files that are this big right now” messages, error messages from
+  broken R code
+- All of these output files are up-to-date – that is, they haven’t
+  fallen behind after the source (`.Rmd`) files have been updated.
+- There should be no relic output files. For example, if you were
+  knitting an `.Rmd` to `.html`, but then changed the output to be only
+  a markdown file, then the `.html` file is a relic and should be
+  deleted.
+
+# Step 4: Submission
+
+### 4.1: Tag a Release **(1 point)**
+
+To submit this milestone, tag a release on GitHub and submit the link to
+Canvas.

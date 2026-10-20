@@ -54,7 +54,13 @@ Use your `tidyverse` knowledge to create one table that calculates mean of one n
 Show the outputted table.
 
 <!-------------------------- Start your work below ---------------------------->
-```{r, error= TRUE}
+```{r}
+#Copying over code to get tidy_data from mda - need to do this on MDA deliverable 2 file to avoid knitting errors. 
+tidy_data <- select(wildfire, wind_speed, current_size, fire_type) #Units: Wind speed [km/h], fire_type [categorical], Affected_Area_Final [Hectares]
+tidy_data <- rename(tidy_data, Affected_Area_Final = "current_size")
+tidy_data <- na.omit(tidy_data)
+
+
 
 tidydat_summary <- tidy_data %>%
   group_by(fire_type) %>%

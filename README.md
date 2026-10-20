@@ -27,7 +27,7 @@ I used generative AI in a very general way to get a better grasp on specific fun
 2. I was having a difficult time understanding when to use the mutate() function vs the summarise() function. My prompt was imply: "When to use summarise vs mutate functions". It then provided examples of using mutate() and across() vs summarise() and across().
 
 3. My mda_deliverable2 file was throwing an error while knitting: "Error in !continue : invalid argument type. Calls: <Anonymous> ... eng_r -> in_input_dir -> in_dir -> evaluate -> <Anonymous>. Quitting from mda_deliverable2.Rmd:57-66 [unnamed-chunk-2]
-Execution halted". I used ChatGPT
+Execution halted". I entered this error into ChatGPT. It said that this was because when knitting, R studio only looks at current file. This made me realize that my tidy_data object was in my environment but not in the current file. I put the code for tidy_data into mda_deliverable 2 file for this reason.
 
 
 I affirm that Generative AI was not used to generate text, code, or comments for 
