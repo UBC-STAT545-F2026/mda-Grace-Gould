@@ -16,13 +16,13 @@ Begin by loading your data and the tidyverse package below:
 Typically, R Packages are loaded in at the very beginning of the analysis. If you later want to use other packages, please come back and add them here:
 
 ```{r, warning = F, message = F}
-#library(tidyverse)
-#library(diversedata)
+library(tidyverse)
+library(diversedata)
 
 #--- Add any other packages below this line ---#
-#library(broom) #for model-fitting 
-#library(viridis)#for colour-blind dataset
-#library(here) #For task 4
+library(broom) #for model-fitting 
+library(viridis)#for colour-blind dataset
+library(here) #For task 4
 ```
 
 
@@ -54,7 +54,7 @@ Use your `tidyverse` knowledge to create one table that calculates mean of one n
 Show the outputted table.
 
 <!-------------------------- Start your work below ---------------------------->
-```{r}
+```{r, error= TRUE}
 
 tidydat_summary <- tidy_data %>%
   group_by(fire_type) %>%
