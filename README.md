@@ -5,12 +5,17 @@ This repository is for STAT545A Mini Data Analysis assignment. I explored datase
 
 ## Contents
 The repository contains: 
+* mda_deliverable1_files/figure-gfm : folder containing pictures from deliverable 1 for displaying in mda_deliverable1.md
+* mda_deliverable2_files/figure-gfm : folder containing pictures from deliverable 2 for displaying in mda_deliverable2.md
+* output: folder containing summary table in csv format. Table includes mean wind speed by fire type.
 * .gitignore: text file for git to know what files to ignore. We don't touch this. 
 * README.md : Contains the descriptions of all files in the mda-Grace-Gould repository
 * mda-Grace-Gould.Rproj : project file in Rstudio
 * mda_deliverable1.Rmd : R markdown source file for executing coding activities for MDA deliverable 1
 * mda_deliverable1.md : static readable text file containing the information from mda_deliverable1.Rmd
-* mda_deliverable.Rmd: R markdown source file for executing coding activities for MDA deliverable 2
+* mda_deliverable2.Rmd: R markdown source file for executing coding activities for MDA deliverable 2
+* mda_deliverable2.md : static readable text file containing the information from mda_deliverable2.Rmd
+
 
 ## Engagement Instructions
 To explore this repository, clone the project to your personal github and use the README file to familiarize yourself. Use the mda-deliverable1.Rmd file to edit and manipulate the code to your liking. Use the mda_deliverable1.md file to read the project without manipulating the code.

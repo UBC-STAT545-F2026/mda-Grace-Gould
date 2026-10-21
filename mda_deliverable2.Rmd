@@ -60,8 +60,6 @@ tidy_data <- select(wildfire, wind_speed, current_size, fire_type) #Units: Wind 
 tidy_data <- rename(tidy_data, Affected_Area_Final = "current_size")
 tidy_data <- na.omit(tidy_data)
 
-
-
 tidydat_summary <- tidy_data %>%
   group_by(fire_type) %>%
   summarise(windspeed_mean = mean(wind_speed))
